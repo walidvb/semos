@@ -122,7 +122,7 @@ function connect() {
         for (var i = 0; i < videoSrcList.length; i++) {
              var videoEle = videoSrcList[i];
             var videoLabel = (videoSrcList[i].label &&videoSrcList[i].label.length > 0)?
-            (videoSrcList[i].label):("src_" + i);
+			(videoSrcList[i].label):("src_" + i);
             addSrcButton(videoLabel, videoSrcList[i].id);
         }
         //
