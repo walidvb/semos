@@ -75,17 +75,15 @@ var properties = {
 
 console.log("easyrtc:", easyrtc);
 
-// here is how to use it
-var bandwidth = {
-    screen: 300, // 300kbits minimum
-    audio: 50,   // 50kbits  minimum
-    video: 40   // 256kbits (both min-max)
-};
-
 function buildSdp(sdp){
-  console.log("sdp before:", sdp);
+  // here is how to use it
+  var bandwidth = {
+      screen: 300, // 300kbits minimum
+      audio: parseInt($('#audio-bandwidth').val()),   // 50kbits  minimum
+      video: parseInt($('#video-bandwidth').val())   // 256kbits (both min-max)
+  };
+  console.log("bandwidth:", bandwidth);
   sdp = BandwidthHandler.setVideoBitrates(sdp, bandwidth);
-  console.log("sdp:", sdp);
   return sdp;
 };
 
@@ -320,63 +318,3 @@ easyrtc.setAcceptChecker(function(easyrtcid, callback) {
   }
   callback(true, easyrtc.getLocalMediaIds());
 });
-
-
-document.addEventListener('DOMContentLoaded', function(){
-  return;
-  var comparer = document.querySelector('#localVideos');
-
-
-  function gumSuccess(stream) {
-    var video = document.createElement('video');
-      // window.stream = stream;
-      if ('mozSrcObject' in video) {
-        video.mozSrcObject = stream;
-      } else if (window.webkitURL) {
-        video.src = window.webkitURL.createObjectURL(stream);
-      } else {
-        video.src = stream;
-      }
-      comparer.appendChild(video);
-      video.play();
-    }
-
-    function gumError(error) {
-      console.error('Error on getUserMedia', error);
-    }
-
-    var constraints = [{
-      video: {
-        mandatory:{
-          maxWidth: 1280,
-          maxHeight: 720
-        }
-      } 
-    },
-    {
-      video: {
-        mandatory:{
-          maxWidth: 1280/2,
-          maxHeight: 720/2
-        }
-      } 
-    },
-    {
-      video: {
-        mandatory:{
-          maxWidth: 160,
-          maxHeight: 120
-        }
-      } 
-    },];
-    function gumInit() {
-      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-      if (navigator.getUserMedia) {
-        for (var i = constraints.length - 1; i >= 0; i--) {
-          navigator.getUserMedia(constraints[i], gumSuccess, gumError);
-        };
-      }
-    }
-    gumInit();
-  });
