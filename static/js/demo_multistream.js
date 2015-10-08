@@ -345,6 +345,7 @@ function loginSuccess(easyrtcid) {
     enable('otherClients');
     selfEasyrtcid = easyrtcid;
     document.getElementById("iam").innerHTML = "I am " + easyrtc.cleanId(easyrtcid);
+    $('.bandwidth').attr('disabled', true);
   }
 
 
