@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Streaming prototype</title>
+    <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
+    <link rel="stylesheet" type="text/css" href="css/prototype.css" />
+    <!-- Assumes global locations for socket.io.js and easyrtc.js -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="js/demo_multistream.js"></script>
+  </head>
+  <body>
+        <div id="demoContainer">
+          <div id="connectControls">
+
+            <button id="connectButton" onclick="connect()">Connect</button>
+            <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
+            <div id="iam">Not yet connected...</div>
+            <div id="videoSrcBlk">
+            </div>
+            <div id="otherClients"></div>
+          </div>
+          <div id="videos">
+            <div autoplay="autoplay" id="localVideos" class="videos"></div>
+            <div autoplay="autoplay" id="remoteVideos" class="videos"></div>
+            
+            <div id="acceptCallBox"> <!-- Should be initially hidden using CSS -->
+              <div id="acceptCallLabel"></div>
+              <button id="callAcceptButton" >Accept</button> <button id="callRejectButton">Reject</button>
+            </div>
+          </div>
+        </div>
+  </body>
+</html>

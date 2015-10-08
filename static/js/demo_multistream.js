@@ -27,7 +27,13 @@ var selfEasyrtcid = "";
 var haveSelfVideo = false;
 var otherEasyrtcid = null;
 
+easyrtc._desiredVideoProperties = {
+    width: 640,
+    height: 360,
+    //frameRate: 30,
+}
 
+console.log("easyrtc:", easyrtc);
 function disable(domId) {
     console.log("about to try disabling "  +domId);
     document.getElementById(domId).disabled = "disabled";
@@ -51,9 +57,11 @@ function createLabelledButton(buttonLabel) {
 function addMediaStreamToDiv(divId, stream, streamName, isLocal)
 {
     var container = document.createElement("div");
+    container.classList.add('video-wrapper');
     container.style.marginBottom = "10px";
     var formattedName = streamName.replace("(", "<br>").replace(")", "");
     var labelBlock = document.createElement("div");
+    labelBlock.classList.add('video-details');
     labelBlock.style.width = "220px";
     labelBlock.style.cssFloat = "left";
     labelBlock.innerHTML = "<pre>" + formattedName + "</pre><br>";
@@ -103,16 +111,6 @@ function addSrcButton(buttonLabel, videoId) {
     };
 }
 
-var sizes = [{width: 1280, height: 720}, {width: 640, height: 360}];
-function addFormatSelector(videoId){
-    var dropdown = document.createElement('select');
-    for (var i = sizes.length - 1; i >= 0; i--) {
-        var opt = document.createElement('option');
-        opt.value = '1';
-        opt.innerText = size[i].width + 'x' + size[i].height;
-    };
-}
-
 function connect() {
     console.log("Initializing.");
     easyrtc.setRoomOccupantListener(convertListToButtons);
@@ -155,6 +153,10 @@ function connect() {
 
 function hangup() {
     easyrtc.hangupAll();
+    var remotes = document.querySelectorAll('#remoteVideos .video-wrapper');
+    for (var i = remotes.length - 1; i >= 0; i--) {
+        remotes[i].remove();
+    };
     disable('hangupButton');
 }
 
@@ -262,4 +264,64 @@ easyrtc.setAcceptChecker(function(easyrtcid, callback) {
         easyrtc.hangupAll();
     }
     callback(true, easyrtc.getLocalMediaIds());
+});
+
+
+document.addEventListener('DOMContentLoaded', function(){
+    return;
+    var comparer = document.querySelector('#localVideos');
+    
+
+    function gumSuccess(stream) {
+      var video = document.createElement('video');
+      // window.stream = stream;
+      if ('mozSrcObject' in video) {
+        video.mozSrcObject = stream;
+      } else if (window.webkitURL) {
+        video.src = window.webkitURL.createObjectURL(stream);
+      } else {
+        video.src = stream;
+      }
+      comparer.appendChild(video);
+      video.play();
+    }
+
+    function gumError(error) {
+      console.error('Error on getUserMedia', error);
+    }
+
+    var constraints = [{
+        video: {
+            mandatory:{
+                maxWidth: 1280,
+                maxHeight: 720
+            }
+        } 
+    },
+    {
+        video: {
+            mandatory:{
+                maxWidth: 1280/2,
+                maxHeight: 720/2
+            }
+        } 
+    },
+    {
+        video: {
+            mandatory:{
+                maxWidth: 160,
+                maxHeight: 120
+            }
+        } 
+    },];
+    function gumInit() {
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+      if (navigator.getUserMedia) {
+        for (var i = constraints.length - 1; i >= 0; i--) {
+            navigator.getUserMedia(constraints[i], gumSuccess, gumError);
+        };
+      }
+    }
+    gumInit();
 });
