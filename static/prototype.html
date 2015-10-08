@@ -3,23 +3,37 @@
   <head>
     <title>Streaming prototype</title>
     <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
+    <link rel="stylesheet" type="text/css" href="colors.css/css/colors.min.css" />
     <link rel="stylesheet" type="text/css" href="css/prototype.css" />
     <!-- Assumes global locations for socket.io.js and easyrtc.js -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
-    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="js/demo_multistream.js"></script>
   </head>
   <body>
         <div id="demoContainer">
           <div id="connectControls">
-
-            <button id="connectButton" onclick="connect()">Connect</button>
-            <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
-            <div id="iam">Not yet connected...</div>
-            <div id="videoSrcBlk">
+            <div class="ctrl-section">
+              <button id="connectButton" onclick="connect()">Connect</button>
+              <button id="hangupButton" disabled="disabled" onclick="hangup()">Hangup</button>
+              <div id="iam">Not yet connected...</div>
+              <div id="otherClients" class="ctrl-section"></div>
             </div>
-            <div id="otherClients"></div>
+            <div class="ctrl-section formats">
+              <div>
+                <label for="formats">Resolution</label>
+                <select name="formats" id="formats"></select>
+              </div>
+              <div>
+                <label for="framerate">Framerate</label>
+                <input type="number" min="5" max="60" step="5" id="framerate" value="30">
+              </div>
+            </div>
+            <div id="videoSrcBlk" class="ctrl-section">
+            </div>
+          <div class="ctrl-section">
+          </div>
           </div>
           <div id="videos">
             <div autoplay="autoplay" id="localVideos" class="videos"></div>
