@@ -21,6 +21,7 @@ body{
   -webkit-transition: all 0.2s 0.5s ease-out;
   display: flex;
   align-items: flex-start;
+  z-index: 1000;
   &:hover{
   	top: auto;
   	bottom: 0;
@@ -49,6 +50,7 @@ button{
 	position: relative;
 	.video-details{
 		opacity: 0;
+		padding: 5px;
 		position: absolute;
 		background-color: rgba(0,0,0,0.7);
 		top: 0;
@@ -64,6 +66,7 @@ button{
 
 .fullscreen video{
 	position: fixed;
+	z-index: 995;
 	width: 100vw;
 	height: 100vh;
 }

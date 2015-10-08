@@ -31,7 +31,7 @@ var otherEasyrtcid = null;
 var formats= [
   {
     width: 640,
-    height: 360
+    height: 480
   },
   {
     width: 640*1.5,
@@ -53,7 +53,10 @@ var properties = {
     // Properties
     addFormatsSelector();
     $('#formats').on('change', function(){
-      easyrtc._desiredVideoProperties.video = formats[$('#formats').val()];
+      var res = formats[$('#formats').val()];
+      easyrtc._desiredVideoProperties.width = res.width;
+      easyrtc._desiredVideoProperties.height = res.height;
+      console.log("easyrtc._desiredVideoProperties:", easyrtc._desiredVideoProperties);
     });
     $('#framerate').on('change', function(){
       easyrtc._desiredVideoProperties.frameRate = parseInt($(this).val());
@@ -73,8 +76,6 @@ var properties = {
   
 })($, window);
 
-console.log("easyrtc:", easyrtc);
-
 function buildSdp(sdp){
   // here is how to use it
   var bandwidth = {
@@ -82,7 +83,6 @@ function buildSdp(sdp){
       audio: parseInt($('#audio-bandwidth').val()),   // 50kbits  minimum
       video: parseInt($('#video-bandwidth').val())   // 256kbits (both min-max)
   };
-  console.log("bandwidth:", bandwidth);
   sdp = BandwidthHandler.setVideoBitrates(sdp, bandwidth);
   return sdp;
 };
@@ -114,15 +114,20 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   var container = document.createElement("div");
   var container = $('<div class="video-wrapper"/>');
   var formattedName = streamName.replace("(", "<br>").replace(")", "");
-  var labelBlock = $('<div class="video-details">'+formattedName+'</div>');
-  container.append(labelBlock);
+  var details = $('<div class="video-details">'+formattedName+'</div>');
+  container.append(details);
   var video = document.createElement("video");
   video.muted = isLocal;
   container.append(video);
+
+  var stats = $('<div class="stats"/>');
+  details.append(stats);
+  var statsInterval = calculateStats(video, stats);
+
   document.getElementById(divId).appendChild(container[0]);
   video.autoplay = true;
   easyrtc.setVideoObjectSrc(video, stream);
-  return labelBlock[0];
+  return details[0];
 }
 
 
@@ -175,32 +180,8 @@ function connect() {
      var videoLabel = (videoSrcList[i].label &&videoSrcList[i].label.length > 0)?
      (videoSrcList[i].label):("src_" + i);
      addSrcButton(videoLabel, videoSrcList[i].id);
-   }
-        //
-        // add an extra button for screen sharing
-        //
-        var screenShareButton = createLabelledButton("Screen capture/share");
-        var numScreens = 0;
-        if (!chrome.desktopCapture) {
-          screenShareButton.disabled = true;
-        }
-        else {
-          screenShareButton.onclick = function() {
-            numScreens++;
-            var streamName = "screen" + numScreens;
-            easyrtc.initScreenCapture(
-              function(stream) {
-                createLocalVideo(stream, streamName);
-                if( otherEasyrtcid) {
-                  easyrtc.addStreamToCall(otherEasyrtcid, "screen");
-                }
-              },
-              function(errCode, errText) {
-                easyrtc.showError(errCode, errText);
-              }, streamName);
-          };
-        }
-      });
+    }
+  });
 }
 
 
@@ -263,6 +244,100 @@ function performCall(targetEasyrtcId) {
   enable('hangupButton');
 }
 
+function getStats(peer) {
+    _getStats(peer, function (results) {
+        for (var i = 0; i < results.length; ++i) {
+            var res = results[i];
+
+            if (res.googCodecName == 'opus') {
+                if (!window.prevBytesSent) 
+                    window.prevBytesSent = res.bytesSent;
+
+                var bytes = res.bytesSent - window.prevBytesSent;
+                window.prevBytesSent = res.bytesSent;
+
+                var kilobytes = bytes / 1024;
+                console.log(kilobytes.toFixed(1) + ' kbits/s');
+            }
+        }
+
+        setTimeout(function () {
+            getStats(peer);
+        }, 1000);
+    });
+}
+// a wrapper around getStats which hides the differences (where possible)
+// following code-snippet is taken from somewhere on the github
+function _getStats(peer, cb) {
+    if (!!navigator.mozGetUserMedia) {
+        peer.getStats(
+            function (res) {
+                var items = [];
+                res.forEach(function (result) {
+                    items.push(result);
+                });
+                cb(items);
+            },
+            cb
+        );
+    } else {
+        peer.getStats(function (res) {
+            var items = [];
+            res.result().forEach(function (result) {
+                var item = {};
+                result.names().forEach(function (name) {
+                    item[name] = result.stat(name);
+                });
+                item.id = result.id;
+                item.type = result.type;
+                item.timestamp = result.timestamp;
+                items.push(item);
+            });
+            cb(items);
+        });
+    }
+};
+
+function calculateStats(video, container) {
+  var decodedFrames = 0,
+          droppedFrames = 0,
+          startTime = new Date().getTime(),
+          initialTime = new Date().getTime();
+
+  var interval = window.setInterval(function(){
+      //see if webkit stats are available; exit if they aren't
+      if (!video.webkitDecodedFrameCount){
+          console.log("Video FPS calcs not supported");
+          return;
+      }
+      //get the stats
+      else{
+          var currentTime = new Date().getTime();
+          var deltaTime = (currentTime - startTime) / 1000;
+          var totalTime = (currentTime - initialTime) / 1000;
+          startTime = currentTime;
+
+          // Calculate decoded frames per sec.
+          var currentDecodedFPS  = (video.webkitDecodedFrameCount - decodedFrames) / deltaTime;
+          var decodedFPSavg = video.webkitDecodedFrameCount / totalTime;
+          decodedFrames = video.webkitDecodedFrameCount;
+
+          // Calculate dropped frames per sec.
+          var currentDroppedFPS = (video.webkitDroppedFrameCount - droppedFrames) / deltaTime;
+          var droppedFPSavg = video.webkitDroppedFrameCount / totalTime;
+          droppedFrames = video.webkitDroppedFrameCount;
+
+          //write the results to a table
+          $(container)[0].innerHTML =
+                  "<table><tr><th>Type</th><th>Total</th><th>Avg</th><th>Current</th></tr>" +
+                  "<tr><td>Decoded</td><td>" + decodedFrames + "</td><td>" + decodedFPSavg.toFixed() + "</td><td>" + currentDecodedFPS.toFixed()+ "</td></tr>" +
+                  "<tr><td>Dropped</td><td>" + droppedFrames + "</td><td>" + droppedFPSavg.toFixed() + "</td><td>" + currentDroppedFPS.toFixed() + "</td></tr>" +
+                  "<tr><td>All</td><td>" + (decodedFrames + droppedFrames) + "</td><td>" + (decodedFPSavg + droppedFPSavg).toFixed() + "</td><td>" + (currentDecodedFPS + currentDroppedFPS).toFixed() + "</td></tr></table>" +
+                  "Camera resolution: " + video.videoWidth + " x " + video.videoHeight;
+      }
+  }, 1000);
+  return interval;
+}
 
 function loginSuccess(easyrtcid) {
   disable("connectButton");
@@ -293,7 +368,6 @@ easyrtc.setStreamAcceptor(function(easyrtcid, stream, streamName) {
   console.log("accepted incoming stream with name " + stream.streamName);
   console.log("checking incoming " + easyrtc.getNameOfRemoteStream(easyrtcid, stream));
 });
-
 
 
 easyrtc.setOnStreamClosed(function(easyrtcid, stream, streamName) {
