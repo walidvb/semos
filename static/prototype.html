@@ -8,6 +8,7 @@
     <!-- Assumes global locations for socket.io.js and easyrtc.js -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/BandwidthHandler.js"></script>
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
     <script type="text/javascript" src="js/demo_multistream.js"></script>
   </head>
@@ -27,7 +28,12 @@
               </div>
               <div>
                 <label for="framerate">Framerate</label>
-                <input type="number" min="5" max="60" step="5" id="framerate" value="30">
+                <input type="number" min="5" max="60" step="5" id="framerate" value="30">(fps)
+              </div>
+              <div>
+                <label for="bandwidth">Bandwidth</label>
+                <input type="number" min="40" value="0">
+                (kbps)
               </div>
             </div>
             <div id="videoSrcBlk" class="ctrl-section">

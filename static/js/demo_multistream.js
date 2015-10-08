@@ -23,33 +23,33 @@
 //ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //POSSIBILITY OF SUCH DAMAGE.
 //
+
 var selfEasyrtcid = "";
 var haveSelfVideo = false;
 var otherEasyrtcid = null;
 
 var formats= [
-{
-  width: 640,
-  height: 360
-},
-{
-  width: 640*1.5,
-  height: 360*1.5
-},
-{
-  width: 1280,
-  height: 720,
+  {
+    width: 640,
+    height: 360
+  },
+  {
+    width: 640*1.5,
+    height: 360*1.5
+  },
+  {
+    width: 1280,
+    height: 720,
 }];
+
 var properties = {
   video: formats[0],
   frameRate: 30,
 };
 
+
 (function($, window){
-  console.log("$:", $);
   $(document).ready(function(){
-
-
     // Properties
     addFormatsSelector();
     $('#formats').on('change', function(){
@@ -58,7 +58,10 @@ var properties = {
     $('#framerate').on('change', function(){
       easyrtc._desiredVideoProperties.frameRate = parseInt($(this).val());
     });
-
+    $('#bandwidth').on('change', function(){
+      var bandwidth = $(this).value();
+      easyrtc.setVideoBandwidth(parseInt(bandwidth));
+    });
     // Set up DOM
     function addFormatsSelector(){
       for (var i = 0; i < formats.length; i++) {
@@ -71,6 +74,23 @@ var properties = {
 })($, window);
 
 console.log("easyrtc:", easyrtc);
+
+// here is how to use it
+var bandwidth = {
+    screen: 300, // 300kbits minimum
+    audio: 50,   // 50kbits  minimum
+    video: 40   // 256kbits (both min-max)
+};
+
+function buildSdp(sdp){
+  console.log("sdp before:", sdp);
+  sdp = BandwidthHandler.setVideoBitrates(sdp, bandwidth);
+  console.log("sdp:", sdp);
+  return sdp;
+};
+
+easyrtc.setSdpFilters(buildSdp, buildSdp);
+
 function disable(domId) {
   console.log("about to try disabling "  +domId);
   document.getElementById(domId).disabled = "disabled";
@@ -94,23 +114,17 @@ function createLabelledButton(buttonLabel) {
 function addMediaStreamToDiv(divId, stream, streamName, isLocal)
 {
   var container = document.createElement("div");
-  container.classList.add('video-wrapper');
-  container.style.marginBottom = "10px";
+  var container = $('<div class="video-wrapper"/>');
   var formattedName = streamName.replace("(", "<br>").replace(")", "");
-  var labelBlock = document.createElement("div");
-  labelBlock.classList.add('video-details');
-  labelBlock.style.width = "220px";
-  labelBlock.style.cssFloat = "left";
-  labelBlock.innerHTML = "<pre>" + formattedName + "</pre><br>";
-  container.appendChild(labelBlock);
+  var labelBlock = $('<div class="video-details">'+formattedName+'</div>');
+  container.append(labelBlock);
   var video = document.createElement("video");
   video.muted = isLocal;
-  video.style.verticalAlign= "middle";
-  container.appendChild(video);
-  document.getElementById(divId).appendChild(container);
+  container.append(video);
+  document.getElementById(divId).appendChild(container[0]);
   video.autoplay = true;
   easyrtc.setVideoObjectSrc(video, stream);
-  return labelBlock;
+  return labelBlock[0];
 }
 
 
@@ -122,6 +136,12 @@ function createLocalVideo(stream, streamName) {
     easyrtc.closeLocalStream(streamName);
     labelBlock.parentNode.parentNode.removeChild(labelBlock.parentNode);
   }
+
+  var fullscreen = $('<button>Fullscreen</button>');
+  fullscreen.on('click', function(){
+    $(this).parents('.video-wrapper').toggleClass('fullscreen');
+  });
+  labelBlock.appendChild(fullscreen[0]);
   labelBlock.appendChild(closeButton);
 
   console.log("created local video, stream.streamName = " + stream.streamName);
