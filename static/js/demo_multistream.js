@@ -134,11 +134,14 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
     $(this).parents('.video-wrapper').toggleClass('fullscreen');
   });
 
-  var mute = $('<button>mute</button>');
-  mute.on('click', function(){
-    video.muted = !video.muted;
-  });
-  details.append(mute);
+  if(!isLocal)
+  {
+    var mute = $('<button>mute</button>');
+    mute.on('click', function(){
+      video.muted = !video.muted;
+    });
+    details.append(mute);
+  };
   details.append(fullscreen[0]);
   details.append(closeButton);
   console.log("created local video, stream.streamName = " + stream.streamName);
@@ -163,6 +166,9 @@ function createLocalVideo(stream, streamName) {
 function addSrcButton(buttonLabel, videoId) {
   var button = createLabelledButton(buttonLabel);
   button.onclick = function() {
+    // check audio state
+    var currentAudio = $('[name="audio-'+videoId+'"]').is(':checked');
+    easyrtc.enableAudio(currentAudio);
     easyrtc.setVideoSource(videoId);
     easyrtc.initMediaSource(
       function(stream) {
@@ -186,10 +192,14 @@ function connect() {
   easyrtc.setAutoInitUserMedia(false);
   easyrtc.getVideoSourceList(function(videoSrcList) {
     for (var i = 0; i < videoSrcList.length; i++) {
+     var src = $('<div class="src">');
      var videoEle = videoSrcList[i];
-     var videoLabel = (videoSrcList[i].label &&videoSrcList[i].label.length > 0)?
-     (videoSrcList[i].label):("src_" + i);
-     addSrcButton(videoLabel, videoSrcList[i].id);
+     var videoLabel = (videoEle.label && videoEle.label.length > 0)?
+     (videoEle.label):("src_" + i);
+     var audioCheckbox = $('<input type="checkbox" name="audio-'+videoEle.id+'"/>');
+     src.append(videoLabel);
+     $('#videoSrcBlk').append(audioCheckbox);
+     addSrcButton(videoLabel, videoEle.id);
     }
   });
 }
