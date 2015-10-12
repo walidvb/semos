@@ -165,7 +165,7 @@ function addSrcButton(buttonLabel, videoId) {
   var button = createLabelledButton(buttonLabel);
   button.onclick = function() {
     // check audio state
-    var currentAudio = $('[name="audio-'+videoId+'"]').is(':checked');
+    var currentAudio = $('#audio-'+videoId).is(':checked');
     easyrtc.enableAudio(currentAudio);
     easyrtc.setVideoSource(videoId);
     easyrtc.initMediaSource(
@@ -195,7 +195,7 @@ function connect() {
      var videoLabel = (videoEle.label && videoEle.label.length > 0)?
      (videoEle.label):("src_" + i);
      var audioName = 'audio-'+videoEle.id;
-     var audioCheckbox = $('<input type="checkbox" name='+audioName+'" id='+audioName+'/>');
+     var audioCheckbox = $('<input type="checkbox" name='+audioName+'" id="'+audioName+'"/>');
      var audioLabel = $('<label for="'+audioName+'">audio</label>')
 
      src.append(videoLabel);
