@@ -61,10 +61,6 @@ var properties = {
     $('#framerate').on('change', function(){
       easyrtc._desiredVideoProperties.frameRate = parseInt($(this).val());
     });
-    $('#bandwidth').on('change', function(){
-      var bandwidth = $(this).value();
-      easyrtc.setVideoBandwidth(parseInt(bandwidth));
-    });
     // Set up DOM
     function addFormatsSelector(){
       for (var i = 0; i < formats.length; i++) {
@@ -114,12 +110,12 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   var container = document.createElement("div");
   var container = $('<div class="video-wrapper"/>');
   var formattedName = streamName.replace("(", "<br>").replace(")", "");
-  var details = $('<div class="video-details">'+formattedName+'</div>');
+  var details = $('<div class="video-details"/>');
   container.append(details);
   var video = document.createElement("video");
   video.muted = isLocal;
   container.append(video);
-
+  var controls = $('<div class="controls"/>');
   // controls
   // close
   var closeButton = createLabelledButton("close");
@@ -134,16 +130,18 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
     $(this).parents('.video-wrapper').toggleClass('fullscreen');
   });
 
+  controls.append($('<div>'+formattedName+'</div>'));
   if(!isLocal)
   {
     var mute = $('<button>mute</button>');
     mute.on('click', function(){
       video.muted = !video.muted;
     });
-    details.append(mute);
+    controls.append(mute);
   };
-  details.append(fullscreen[0]);
-  details.append(closeButton);
+  controls.append(fullscreen[0]);
+  controls.append(closeButton);
+  controls.appendTo(details);
   console.log("created local video, stream.streamName = " + stream.streamName);
 
 
@@ -196,9 +194,12 @@ function connect() {
      var videoEle = videoSrcList[i];
      var videoLabel = (videoEle.label && videoEle.label.length > 0)?
      (videoEle.label):("src_" + i);
-     var audioCheckbox = $('<input type="checkbox" name="audio-'+videoEle.id+'"/>');
+     var audioName = 'audio-'+videoEle.id;
+     var audioCheckbox = $('<input type="checkbox" name='+audioName+'" id='+audioName+'/>');
+     var audioLabel = $('<label for="'+audioName+'">audio</label>')
+
      src.append(videoLabel);
-     $('#videoSrcBlk').append(audioCheckbox);
+     $('#videoSrcBlk').append(audioCheckbox).append(audioLabel);
      addSrcButton(videoLabel, videoEle.id);
     }
   });

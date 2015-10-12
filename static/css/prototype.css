@@ -37,7 +37,12 @@ button {
   border: none;
   color: white;
   cursor: pointer;
-  padding: 5px 10px; }
+  padding: 5px 10px;
+  margin-right: 3px;
+  margin-bottom: 3px; }
+
+.stats {
+  float: right; }
 
 .videos {
   display: flex; }
