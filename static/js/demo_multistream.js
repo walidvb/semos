@@ -75,11 +75,15 @@ var properties = {
 function buildSdp(sdp){
   // here is how to use it
   var bandwidth = {
-      screen: 300, // 300kbits minimum
       audio: parseInt($('#audio-bandwidth').val()),   // 50kbits  minimum
       video: parseInt($('#video-bandwidth').val())   // 256kbits (both min-max)
   };
   sdp = BandwidthHandler.setVideoBitrates(sdp, bandwidth);
+
+  sdp = sdp.replace(/b=AS([^\r\n]+\r\n)/g, '');
+  sdp = sdp.replace(/a=mid:audio\r\n/g, 'a=mid:audio\r\nb=AS:' + bandwidth.audio + '\r\n');
+  sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + bandwidth.video + '\r\n');
+  console.log("sdp:", sdp);
   return sdp;
 };
 
@@ -129,12 +133,13 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   // fullscreen
   var fullscreen = $('<button><i class="fa fa-arrows-alt"></i></button>');
   fullscreen.on('click', function(){
-    $(this).parents('.video-wrapper').toggleClass('fullscreen');
+    container.toggleClass('fullscreen');
   });
 
   controls.append($('<div>'+formattedName+'</div>'));
   if(!isLocal)
   {
+
     var mute = $('<button><i class="fa fa-microphone"></i></button>');
     mute.on('click', function(){
       video.muted = !video.muted;
@@ -142,6 +147,21 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
       //mute.find('i').toggleClass('fa-microphone', !video.muted)
     });
     controls.append(mute);
+  }
+  else{
+    var videoMuted = false;
+    var muteVideo = $('<button><i class="fa fa-pause"></i></button>');
+    muteVideo.on('click', function(){
+      videoMuted = !videoMuted;
+      if(!videoMuted){
+        easyrtc.setVideoObjectSrc(video, stream);
+      }
+      else{
+        easyrtc.setVideoObjectSrc(video, ''); 
+      }
+      muteVideo.find('i').toggleClass('fa-video-camera fa-pause')
+    });
+    controls.append(muteVideo);
   };
   controls.append(fullscreen[0]);
   controls.append(closeButton);
@@ -189,6 +209,7 @@ function addSrcButton(buttonLabel, videoId) {
 
 function connect() {
   console.log("Initializing.");
+  $('body').removeClass('disconnected');
   easyrtc.setRoomOccupantListener(convertListToButtons);
   easyrtc.connect("easyrtc.multistream", loginSuccess, loginFailure);
   easyrtc.setAutoInitUserMedia(false);
@@ -383,10 +404,10 @@ function loginSuccess(easyrtcid) {
     document.getElementById("iam").innerHTML = "logged out";
     easyrtc.disconnect();
     enable("connectButton");
-//    disable("disconnectButton");
-clearConnectList();
-easyrtc.setVideoObjectSrc(document.getElementById('selfVideo'), "");
-}
+    //    disable("disconnectButton");
+    clearConnectList();
+    easyrtc.setVideoObjectSrc(document.getElementById('selfVideo'), "");
+  }
 
 easyrtc.setStreamAcceptor(function(easyrtcid, stream, streamName) {
   var labelBlock = addMediaStreamToDiv("remoteVideos", stream, streamName, false);
