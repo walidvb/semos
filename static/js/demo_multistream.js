@@ -120,6 +120,24 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   video.muted = isLocal;
   container.append(video);
 
+  // controls
+  // close
+  var closeButton = createLabelledButton("close");
+  closeButton.onclick = function() {
+    easyrtc.closeLocalStream(streamName);
+    details.parent('.video-wrapper').remove();
+  }
+
+  // fullscreen
+  var fullscreen = $('<button>Fullscreen</button>');
+  fullscreen.on('click', function(){
+    $(this).parents('.video-wrapper').toggleClass('fullscreen');
+  });
+  details.append(fullscreen[0]);
+  details.append(closeButton);
+  console.log("created local video, stream.streamName = " + stream.streamName);
+
+
   var stats = $('<div class="stats"/>');
   details.append(stats);
   var statsInterval = calculateStats(video, stats);
@@ -134,20 +152,6 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
 
 function createLocalVideo(stream, streamName) {
   var labelBlock = addMediaStreamToDiv("localVideos", stream, streamName, true);
-  var closeButton = createLabelledButton("close");
-  closeButton.onclick = function() {
-    easyrtc.closeLocalStream(streamName);
-    labelBlock.parentNode.parentNode.removeChild(labelBlock.parentNode);
-  }
-
-  var fullscreen = $('<button>Fullscreen</button>');
-  fullscreen.on('click', function(){
-    $(this).parents('.video-wrapper').toggleClass('fullscreen');
-  });
-  labelBlock.appendChild(fullscreen[0]);
-  labelBlock.appendChild(closeButton);
-
-  console.log("created local video, stream.streamName = " + stream.streamName);
 }
 
 function addSrcButton(buttonLabel, videoId) {
