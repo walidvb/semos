@@ -30,12 +30,24 @@ var otherEasyrtcid = null;
 
 var formats= [
   {
+    width: 320,
+    height: 180
+  },
+  {
+    width: 320,
+    height: 240
+  },
+  {
+    width: 640,
+    height: 360
+  },
+  {
     width: 640,
     height: 480
   },
   {
-    width: 640*1.5,
-    height: 360*1.5
+    width: 960,
+    height: 720
   },
   {
     width: 1280,
@@ -351,6 +363,7 @@ function calculateStats(video, container) {
           initialTime = new Date().getTime();
 
   var interval = window.setInterval(function(){
+      console.log("renderedVideoDimensions(video):", renderedVideoDimensions(video));
       //see if webkit stats are available; exit if they aren't
       if (!video.webkitDecodedFrameCount){
           console.log("Video FPS calcs not supported");
@@ -379,10 +392,18 @@ function calculateStats(video, container) {
                   "<tr><td>Decoded</td><td>" + decodedFrames + "</td><td>" + decodedFPSavg.toFixed() + "</td><td>" + currentDecodedFPS.toFixed()+ "</td></tr>" +
                   "<tr><td>Dropped</td><td>" + droppedFrames + "</td><td>" + droppedFPSavg.toFixed() + "</td><td>" + currentDroppedFPS.toFixed() + "</td></tr>" +
                   "<tr><td>All</td><td>" + (decodedFrames + droppedFrames) + "</td><td>" + (decodedFPSavg + droppedFPSavg).toFixed() + "</td><td>" + (currentDecodedFPS + currentDroppedFPS).toFixed() + "</td></tr></table>" +
-                  "Camera resolution: " + video.videoWidth + " x " + video.videoHeight;
+                  "Camera resolution: " + video.videoWidth + " x " + video.videoHeight +
+                  "<div class='actual-dimensions'>"+renderedVideoDimensions(video)+"</div>";
+
       }
   }, 1000);
   return interval;
+}
+function renderedVideoDimensions(video){
+  var $this = $(video);
+  var h = $this.height();
+  var w = $this.width();
+  return 'Display Resolution: '+w+' x '+h;
 }
 
 function loginSuccess(easyrtcid) {

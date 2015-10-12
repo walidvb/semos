@@ -70,7 +70,7 @@ a {
     opacity: 1; }
   .video-wrapper.fullscreen {
     position: fixed;
-    z-index: 998;
+    z-index: 995;
     width: 100vw;
     height: 100vh;
     left: 0;
