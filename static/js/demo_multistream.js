@@ -133,6 +133,12 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   fullscreen.on('click', function(){
     $(this).parents('.video-wrapper').toggleClass('fullscreen');
   });
+
+  var mute = $('<button>mute</button>');
+  mute.on('click', function(){
+    video.muted = !video.muted;
+  });
+  details.append(mute);
   details.append(fullscreen[0]);
   details.append(closeButton);
   console.log("created local video, stream.streamName = " + stream.streamName);
