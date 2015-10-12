@@ -118,14 +118,16 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   var controls = $('<div class="controls"/>');
   // controls
   // close
-  var closeButton = createLabelledButton("close");
+  var closeButton = createLabelledButton("");
+  var icon = $('<i class="fa fa-times-circle"/>');
+  closeButton.appendChild(icon[0]);
   closeButton.onclick = function() {
     easyrtc.closeLocalStream(streamName);
     details.parent('.video-wrapper').remove();
   }
 
   // fullscreen
-  var fullscreen = $('<button>Fullscreen</button>');
+  var fullscreen = $('<button><i class="fa fa-arrows-alt"></i></button>');
   fullscreen.on('click', function(){
     $(this).parents('.video-wrapper').toggleClass('fullscreen');
   });
@@ -133,9 +135,11 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   controls.append($('<div>'+formattedName+'</div>'));
   if(!isLocal)
   {
-    var mute = $('<button>mute</button>');
+    var mute = $('<button><i class="fa fa-microphone"></i></button>');
     mute.on('click', function(){
       video.muted = !video.muted;
+      mute.find('i').toggleClass('fa-microphone fa-microphone-slash')
+      //mute.find('i').toggleClass('fa-microphone', !video.muted)
     });
     controls.append(mute);
   };
