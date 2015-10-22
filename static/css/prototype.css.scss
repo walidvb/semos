@@ -98,11 +98,12 @@ a{
 video{
 	width: 100%;
 	height: 50px;
-	.video-details:not(.no-video) ~ &{
+	.video-details.video ~ &{
 		height: 100%;
 	}
-	.no-video &{
-		opacity: 0;
+	.video-details.no-video ~ &{
+		opacity: 0.1;
+		border-radius: 50%;
 	}
 }
 .no-video.video-details:before{
