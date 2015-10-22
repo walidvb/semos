@@ -194,7 +194,7 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
 
 
 function createLocalVideo(stream, streamName) {
-  var labelBlock = addMediaStreamToDiv("localVideos", stream, streamName, true);
+  return addMediaStreamToDiv("localVideos", stream, streamName, true);
 }
 
 function addSrcButton(buttonLabel, videoId) {
@@ -202,11 +202,16 @@ function addSrcButton(buttonLabel, videoId) {
   button.onclick = function() {
     // check audio state
     var currentAudio = $('#audio-'+videoId).is(':checked');
+    var currentVideo = $('#video-'+videoId).is(':checked');
     easyrtc.enableAudio(currentAudio);
+    easyrtc.enableVideo(currentVideo);
     easyrtc.setVideoSource(videoId);
     easyrtc.initMediaSource(
       function(stream) {
-        createLocalVideo(stream, buttonLabel);
+        var classes = [currentVideo ? 'video' : 'no-video', currentAudio ? 'audio' : 'no-audio'] 
+        var block = createLocalVideo(stream, buttonLabel);
+        console.log("block:", block);
+        block.className += ' ' + classes.join(' ');
         if( otherEasyrtcid) {
           easyrtc.addStreamToCall(otherEasyrtcid, buttonLabel, function(easyrtcid, streamName){
             easyrtc.showError("Informational", "other party " + easyrtcid + " acknowledges receiving " + streamName);
@@ -235,8 +240,14 @@ function connect() {
      var audioCheckbox = $('<input type="checkbox" name='+audioName+'" id="'+audioName+'"/>');
      var audioLabel = $('<label for="'+audioName+'">audio</label>')
 
+     var videoName = 'video-'+videoEle.id;
+     var videoCheckbox = $('<input type="checkbox" name='+videoName+'" id="'+videoName+'"/>');
+     var videoCheckboxLabel = $('<label for="'+videoName+'">video</label>')
+
      src.append(videoLabel);
+     src.append(audioLabel);
      $('#videoSrcBlk').append(audioCheckbox).append(audioLabel);
+     $('#videoSrcBlk').append(videoCheckbox).append(videoCheckboxLabel);
      addSrcButton(videoLabel, videoEle.id);
     }
   });

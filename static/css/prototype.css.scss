@@ -97,5 +97,8 @@ a{
 }
 video{
 	width: 100%;
-	height: 100%;
+	height: 50px;
+	.vide-details:not(.no-video) &{
+		height: 100%;
+	}
 }
