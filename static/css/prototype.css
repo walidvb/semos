@@ -84,5 +84,5 @@ a {
 video {
   width: 100%;
   height: 50px; }
-  .vide-details:not(.no-video) video {
+  .video-details:not(.no-video) video {
     height: 100%; }
