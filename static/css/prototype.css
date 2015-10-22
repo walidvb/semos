@@ -84,9 +84,9 @@ a {
 video {
   width: 100%;
   height: 50px; }
-  #localVideos .video-details.video ~ & {
+  #localVideos .video-details.video ~ video {
     height: 100%; }
-  #localVideos .video-details.no-video ~ vi&& {
+  #localVideos .video-details.no-video ~ video {
     opacity: 0.1;
     border-radius: 50%; }
 
