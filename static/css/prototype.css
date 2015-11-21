@@ -6,6 +6,9 @@ body {
 #acceptCallBox {
   display: none; }
 
+.bandwidth {
+  display: none; }
+
 #connectControls {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
