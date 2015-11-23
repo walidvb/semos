@@ -65,6 +65,7 @@ a{
 .video-wrapper {
 	flex: 0 0 50%;
 	position: relative;
+	display: flex;
 	.video-details{
 		opacity: 0;
 		padding: 5px;
@@ -90,7 +91,6 @@ a{
 		top: 0;
 		bottom: 0;
 		background: #111111;
-		display: flex;
 		.video-details{
 			z-index: 1016;
 		}

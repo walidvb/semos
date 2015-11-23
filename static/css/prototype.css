@@ -58,7 +58,8 @@ a {
 
 .video-wrapper {
   flex: 0 0 50%;
-  position: relative; }
+  position: relative;
+  display: flex; }
   .video-wrapper .video-details {
     opacity: 0;
     padding: 5px;
@@ -80,8 +81,7 @@ a {
     right: 0;
     top: 0;
     bottom: 0;
-    background: #111111;
-    display: flex; }
+    background: #111111; }
     .video-wrapper.fullscreen .video-details {
       z-index: 1016; }
 
