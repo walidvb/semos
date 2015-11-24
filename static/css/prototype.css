@@ -59,7 +59,9 @@ a {
 .video-wrapper {
   flex: 0 0 50%;
   position: relative;
-  display: flex; }
+  display: flex;
+  align-items: center;
+  align-content: center; }
   .video-wrapper .video-details {
     opacity: 0;
     padding: 5px;
@@ -88,7 +90,7 @@ a {
 video {
   max-width: 100%;
   max-height: 100%;
-  margin: auto; }
+  flex: 1 1 100%; }
   #localVideos .video-details.no-video ~ video {
     opacity: 0.1;
     border-radius: 50%;
