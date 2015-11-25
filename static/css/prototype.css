@@ -33,7 +33,9 @@ body {
     -webkit-transition: all 0.2s ease-out; }
 
 .ctrl-section {
-  flex: 1 1 25%; }
+  flex: 1 1 25%;
+  max-height: 150px;
+  overflow: auto; }
 
 button {
   -webkit-appearance: none;

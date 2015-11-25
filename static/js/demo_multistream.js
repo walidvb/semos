@@ -241,11 +241,11 @@ function connect() {
      (videoEle.label):("src_" + i);
      var audioName = 'audio-'+videoEle.id;
      var audioCheckbox = $('<input type="checkbox" name='+audioName+'" id="'+audioName+'"/>');
-     var audioLabel = $('<label for="'+audioName+'">audio</label>')
+     var audioLabel = $('<label for="'+audioName+'">audio</label>');
 
      var videoName = 'video-'+videoEle.id;
      var videoCheckbox = $('<input type="checkbox" name='+videoName+'" id="'+videoName+'"/>');
-     var videoCheckboxLabel = $('<label for="'+videoName+'">video</label>')
+     var videoCheckboxLabel = $('<label for="'+videoName+'">video</label>');
 
      src.append(videoLabel);
      src.append(audioLabel);

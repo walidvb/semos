@@ -37,6 +37,8 @@ body{
 
 .ctrl-section{
 	flex: 1 1 25%;
+	max-height: 150px;
+	overflow: auto;
 }
 
 button{
