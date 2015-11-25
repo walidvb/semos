@@ -146,6 +146,9 @@ function addMediaStreamToDiv(divId, stream, streamName, isLocal)
   var fullscreen = $('<button><i class="fa fa-arrows-alt"></i></button>');
   fullscreen.on('click', function(){
     container.toggleClass('fullscreen');
+    var vid = $(container).find('video').first().get(0);
+    $(vid).css('min-width', Math.min(window.innerWidth, vid.videoWidth));
+    $(vid).css('min-height', Math.min(window.innerHeight, vid.videoHeight));
   });
 
   controls.append($('<div>'+formattedName+'</div>'));
