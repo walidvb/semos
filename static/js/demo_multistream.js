@@ -55,7 +55,7 @@ var formats= [
 }];
 
 var properties = {
-  video: formats[0],
+  video: formats[5],
   frameRate: 30,
 };
 
